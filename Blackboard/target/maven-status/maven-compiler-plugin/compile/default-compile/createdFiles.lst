@@ -1,0 +1,9 @@
+com\mycompany\blackboard\BlackboardBridge.class
+com\mycompany\blackboard\ks\KSActivarBotonIniciar.class
+com\mycompany\blackboard\ks\KSIniciarPartida.class
+blackboard\IV.class
+com\mycompany\blackboard\KnowledgeSource.class
+com\mycompany\blackboard\ks\KSIniciarJuego.class
+com\mycompany\blackboard\Blackboard.class
+com\mycompany\blackboard\ks\KSEscucharJugadorListo.class
+com\mycompany\blackboard\ks\KSEvaluarJugadoresListos.class
