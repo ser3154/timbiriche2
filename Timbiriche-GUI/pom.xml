@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.mycompany</groupId>
+    <artifactId>TimbiricheGUI</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>TimbiricheGUI</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.release>23</maven.compiler.release>
+        <!-- Apuntar al Launcher que decide si editar perfil o seleccionar tamaño -->
+        <exec.mainClass>app.Launcher</exec.mainClass>
+    </properties>
+
+    <dependencies>
+        <!-- Layout AbsoluteLayout para NetBeans -->
+        <dependency>
+            <groupId>org.netbeans.external</groupId>
+            <artifactId>AbsoluteLayout</artifactId>
+            <version>RELEASE220</version>
+        </dependency>
+
+        <!-- Blackboard como dependencia Maven -->
+        <dependency>
+            <groupId>com.mycompany</groupId>
+            <artifactId>Blackboard</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- TimbiricheNetwork como dependencia Maven -->
+        <dependency>
+            <groupId>com.mycompany</groupId>
+            <artifactId>TimbiricheNetwork</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- Gson para JSON (ProfileStorage, Protocolo, etc.) -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.9</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Permite ejecutar la clase app.Launcher con mvn exec:java -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <mainClass>${exec.mainClass}</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
