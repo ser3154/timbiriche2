@@ -1,47 +1,22 @@
 package com.mycompany.blackboard.ks;
 
-import com.mycompany.blackboard.KnowledgeSourceBase;
+import com.mycompany.blackboard.Blackboard;
 import com.mycompany.timbirichenetwork.eventos.EventoJugadorListo;
 import com.mycompany.timbirichenetwork.modelo.Jugador;
 import mvcLobby.ModeloLobbyJuego;
 
-public class KSEscucharJugadorListo extends KnowledgeSourceBase {
-    
-    private EventoJugadorListo eventoActual;
-    
+public class KSEscucharJugadorListo {
+
     public void procesar(EventoJugadorListo evento) {
-        this.eventoActual = evento;
-        ejecutar(); // Usar el método template de la clase base
-    }
-    
-    @Override
-    protected boolean puedeEjecutar() {
-        return eventoActual != null && eventoActual.getJugador() != null;
-    }
-    
-    @Override
-    protected void procesar() {
-        Jugador jugador = eventoActual.getJugador();
+        Jugador jugador = evento.getJugador();
         jugador.setListo(true);
 
-        // Obtener o crear modelo de lobby
-        ModeloLobbyJuego modelo = obtenerEstadoSeguro(ModeloLobbyJuego.class);
-        if (modelo == null) {
-            modelo = new ModeloLobbyJuego();
-        }
+        Blackboard bb = Blackboard.getInstancia();
+        ModeloLobbyJuego modelo = bb.obtenerEstado(ModeloLobbyJuego.class)
+                .orElseGet(() -> ModeloLobbyJuego.inicializarYPublicar(bb));
 
-        // Actualizar modelo
-        modelo.agregarJugador(jugador);
-        
-        // Publicar cambios
-        publicarEstado(modelo);
-        
-        System.out.println("Jugador " + jugador.getNombre() + " marcado como listo");
-    }
-    
-    @Override
-    protected void postProcesar() {
-        // Limpiar referencia al evento procesado
-        this.eventoActual = null;
+        System.out.println("[KS] EventoJugadorListo recibido desde red para: " + jugador.getNombre());
+        modelo.agregarJugadorDesdeRed(jugador, bb);
+        System.out.println("[KS] ModeloLobby actualizado y publicado.");
     }
 }

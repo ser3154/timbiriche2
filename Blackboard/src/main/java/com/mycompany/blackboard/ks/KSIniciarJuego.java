@@ -1,52 +1,41 @@
 package com.mycompany.blackboard.ks;
 
-import com.mycompany.blackboard.KnowledgeSourceBase;
+import com.mycompany.blackboard.Blackboard;
+import com.mycompany.timbirichenetwork.eventos.EventoIniciarJuego;
+import com.mycompany.timbirichenetwork.modelo.Jugador;
+import mvcJuego.ModeloJuego;
+import javax.swing.*;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class KSIniciarJuego extends KnowledgeSourceBase {
+public class KSIniciarJuego {
 
-    private com.mycompany.timbirichenetwork.eventos.EventoIniciarJuego eventoIniciar;
-    private static final java.util.concurrent.atomic.AtomicBoolean iniciado
-            = new java.util.concurrent.atomic.AtomicBoolean(false);
+    private static final AtomicBoolean iniciado = new AtomicBoolean(false);
 
-    public void procesar(com.mycompany.timbirichenetwork.eventos.EventoIniciarJuego evento) {
-        this.eventoIniciar = evento;
-        ejecutar();
-    }
+    public void procesar(EventoIniciarJuego evento) {
+        List<Jugador> jugadores = evento.getJugadores();
+        if (jugadores.size() < 2) {
+            System.out.println("[KS] No hay suficientes jugadores para iniciar");
+            return;
+        }
 
-    @Override
-    protected boolean puedeEjecutar() {
-        return eventoIniciar != null
-                && eventoIniciar.getJugadores() != null
-                && !eventoIniciar.getJugadores().isEmpty()
-                && !iniciado.get();
-    }
-
-    @Override
-    protected void procesar() {
-        var jugadores = eventoIniciar.getJugadores();
-
-        // Configurar avatares si es necesario
-        for (var jugador : jugadores) {
-            if (jugador.getAvatar() == null && jugador.getRutaAvatar() != null) {
-                jugador.setAvatar(new javax.swing.ImageIcon(jugador.getRutaAvatar()));
+        for (Jugador j : jugadores) {
+            if (j.getAvatar() == null && j.getRutaAvatar() != null) {
+                j.setAvatar(new ImageIcon(j.getRutaAvatar()));
             }
         }
 
-        // Crear modelo de juego
-        mvcJuego.ModeloJuego modeloJuego = new mvcJuego.ModeloJuego(
-                jugadores,
-                eventoIniciar.getTamañoTablero()
-        );
+        System.out.println("[KS] EventoIniciarJuego recibido. Iniciando partida.");
+        ModeloJuego modelo = new ModeloJuego(jugadores, evento.getTamañoTablero());
+        Blackboard blackboard = Blackboard.getInstancia();
+        modelo.inicializarJuego(blackboard, null); // cliente no necesario
+        blackboard.publicar(modelo);
+        System.out.println("[KS] ModeloJuego publicado en Blackboard.");
 
-        // Publicar modelo
-        publicarEstado(modeloJuego);
-
-        // Iniciar controlador de juego
-        if (iniciado.compareAndSet(false, true)) {
-            javax.swing.SwingUtilities.invokeLater(() -> {
-                new mvcJuego.ControladorJuego();
-                System.out.println("Juego iniciado con " + jugadores.size() + " jugadores");
-            });
+        // Crear controlador de juego (solo una vez)
+        if (iniciado.compareAndSet(
+                false, true)) {
+            SwingUtilities.invokeLater(() -> new mvcJuego.ControladorJuego());
         }
     }
 }
