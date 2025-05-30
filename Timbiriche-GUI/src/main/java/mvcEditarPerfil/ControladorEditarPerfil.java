@@ -7,17 +7,15 @@ import mvcLobby.ModeloLobbyJuego;
 public class ControladorEditarPerfil {
 
     private final VistaEditarPerfil vista;
+    private final Blackboard blackboard;
 
     public ControladorEditarPerfil(Jugador jugadorOriginal) {
         this.vista = new VistaEditarPerfil(jugadorOriginal);
+        this.blackboard = Blackboard.getInstancia();
 
         vista.setPerfilEditadoListener(jugadorActualizado -> {
-            System.out.println("Perfil actualizado: " + jugadorActualizado.getNombre());
-            
-            // Actualizar en el modelo de lobby si está disponible
-            Blackboard.getInstancia().obtenerEstado(ModeloLobbyJuego.class).ifPresent(modeloLobby -> {
-                modeloLobby.actualizarJugador(jugadorActualizado);
-                Blackboard.getInstancia().publicar(modeloLobby);
+            blackboard.obtenerEstado(ModeloLobbyJuego.class).ifPresent(modeloLobby -> {
+                modeloLobby.editarPerfilJugador(jugadorActualizado, blackboard);
             });
         });
     }

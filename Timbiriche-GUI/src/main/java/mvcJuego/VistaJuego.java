@@ -33,9 +33,11 @@ public class VistaJuego extends JFrame implements IV<ModeloJuego> {
 
     @Override
     public void actualizar(ModeloJuego modelo) {
-        if (modelo == null) return;
+        if (modelo == null) {
+            return;
+        }
         this.modelo = modelo;
-
+        System.out.println("[VistaJuego] ModeloJuego recibido. Tablero de tamaño: " + modelo.getTamañoTablero());
         actualizarJugadores(modelo.getJugadores());
         construirTablero(modelo.getTamañoTablero());
     }

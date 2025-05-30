@@ -2,10 +2,8 @@ package mvcLobby;
 
 import blackboard.IV;
 import com.mycompany.timbirichenetwork.modelo.Jugador;
-
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 
 public class VistaLobby extends JFrame implements IV<ModeloLobbyJuego> {
 
@@ -43,6 +41,7 @@ public class VistaLobby extends JFrame implements IV<ModeloLobbyJuego> {
 
     @Override
     public void actualizar(ModeloLobbyJuego modelo) {
+        System.out.println("[VistaLobby] Vista actualizada con " + modelo.getJugadores().size() + " jugador(es).");
         panelJugadores.removeAll();
         for (Jugador j : modelo.getJugadores()) {
             JLabel lbl = new JLabel(j.getNombre() + (j.isListo() ? " ✓" : " ..."));

@@ -1,42 +1,70 @@
 package mvcLobby;
 
+import com.mycompany.blackboard.Blackboard;
+import com.mycompany.timbirichenetwork.Cliente;
+import com.mycompany.timbirichenetwork.eventos.EventoIniciarJuego;
+import com.mycompany.timbirichenetwork.eventos.EventoJugadorListo;
 import com.mycompany.timbirichenetwork.modelo.Jugador;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ModeloLobbyJuego {
 
     private final List<Jugador> jugadores = new ArrayList<>();
 
-    public void agregarJugador(Jugador jugador) {
-        boolean existe = jugadores.stream()
-            .anyMatch(j -> j.getNombre().trim().equalsIgnoreCase(jugador.getNombre().trim()));
-
-        if (!existe) {
-            jugadores.add(jugador);
-        } else {
-            actualizarJugador(jugador);
-        }
+    public static ModeloLobbyJuego obtenerOInicializar(Blackboard blackboard) {
+        return blackboard.obtenerEstado(ModeloLobbyJuego.class).orElseGet(() -> {
+            ModeloLobbyJuego nuevo = new ModeloLobbyJuego();
+            blackboard.publicar(nuevo);
+            return nuevo;
+        });
     }
 
-    public void actualizarJugador(Jugador jugador) {
-        for (int i = 0; i < jugadores.size(); i++) {
-            Jugador j = jugadores.get(i);
-            if (j.getNombre().trim().equalsIgnoreCase(jugador.getNombre().trim())) {
-                jugadores.set(i, jugador);
-                break;
-            }
-        }
+    public static ModeloLobbyJuego inicializarYPublicar(Blackboard blackboard) {
+        ModeloLobbyJuego nuevo = new ModeloLobbyJuego();
+        blackboard.publicar(nuevo);
+        return nuevo;
     }
 
-    public List<Jugador> getJugadores() {
-        return new ArrayList<>(jugadores);
+    public void agregarJugador(Jugador jugador, Blackboard blackboard, Cliente cliente) {
+        jugadores.removeIf(j -> j.getNombre().equals(jugador.getNombre()));
+        jugadores.add(jugador);
+        blackboard.publicar(this);
+        cliente.enviarEvento(new EventoJugadorListo(jugador));
+    }
+
+    public void agregarJugadorDesdeRed(Jugador jugador, Blackboard blackboard) {
+        jugadores.removeIf(j -> j.getNombre().equals(jugador.getNombre()));
+        jugadores.add(jugador);
+        blackboard.publicar(this);
+    }
+
+    public void solicitarInicioJuego(Blackboard blackboard, Cliente cliente, int tamañoTablero) {
+        if (puedeIniciar()) {
+            EventoIniciarJuego evento = new EventoIniciarJuego(jugadores, tamañoTablero);
+            blackboard.publicarEvento(evento);
+            cliente.enviarEvento(evento);
+        }
     }
 
     public boolean puedeIniciar() {
-        long listos = jugadores.stream().filter(Jugador::isListo).count();
-        return listos >= 2 && listos <= 4;
+        return jugadores.size() >= 2 && jugadores.stream().allMatch(Jugador::isListo);
+    }
+
+    public void actualizarJugador(Jugador jugador, Blackboard blackboard, Cliente cliente) {
+        jugadores.removeIf(j -> j.getNombre().equals(jugador.getNombre()));
+        jugadores.add(jugador);
+        blackboard.publicar(this);
+        cliente.enviarEvento(new EventoJugadorListo(jugador));
+    }
+
+    public void editarPerfilJugador(Jugador jugador, Blackboard blackboard) {
+        jugadores.removeIf(j -> j.getNombre().equals(jugador.getNombre()));
+        jugadores.add(jugador);
+        blackboard.publicar(this);
+    }
+
+    public List<Jugador> getJugadores() {
+        return jugadores;
     }
 }

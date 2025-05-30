@@ -1,17 +1,13 @@
 package mvcRegistro;
 
-import blackboard.IV;
-
 import javax.swing.*;
 import java.awt.*;
 
-public class VistaRegistro extends JFrame implements IV<ModeloRegistro> {
-
+public class VistaRegistro extends JFrame {
     private final JTextField txtNombre;
     private final JButton btnColor;
     private final JButton btnAvatar;
     private final JButton btnRegistrar;
-
     private Color colorSeleccionado = Color.BLUE;
     private String rutaAvatarSeleccionado = "";
 
@@ -32,7 +28,13 @@ public class VistaRegistro extends JFrame implements IV<ModeloRegistro> {
         add(btnAvatar);
         add(btnRegistrar);
 
-        btnColor.addActionListener(e -> colorSeleccionado = JColorChooser.showDialog(this, "Color", colorSeleccionado));
+        btnColor.addActionListener(e -> {
+            Color nuevoColor = JColorChooser.showDialog(this, "Color", colorSeleccionado);
+            if (nuevoColor != null) {
+                colorSeleccionado = nuevoColor;
+            }
+        });
+
         btnAvatar.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser("Avatares/");
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -58,10 +60,5 @@ public class VistaRegistro extends JFrame implements IV<ModeloRegistro> {
 
     public String getRutaAvatar() {
         return rutaAvatarSeleccionado;
-    }
-
-    @Override
-    public void actualizar(ModeloRegistro modelo) {
-        txtNombre.setText(modelo.getNombre());
     }
 }

@@ -1,7 +1,8 @@
 package mvcJuego;
 
+import com.mycompany.blackboard.Blackboard;
+import com.mycompany.timbirichenetwork.Cliente;
 import com.mycompany.timbirichenetwork.modelo.Jugador;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,18 @@ public class ModeloJuego {
         this.tablero = new int[tamañoTablero][tamañoTablero];
     }
 
+    // Método según diagrama - el modelo inicializa y notifica
+    public void inicializarJuego(Blackboard blackboard, Cliente cliente) {
+        if (jugadores.size() < 2) {
+            System.out.println("[ModeloJuego] No hay suficientes jugadores para iniciar");
+            return;
+        }
+
+        System.out.println("[ModeloJuego] Inicializando juego con " + jugadores.size() + " jugador(es)");
+        blackboard.publicar(this);
+    }
+
+    // Getters y métodos existentes...
     public List<Jugador> getJugadores() {
         return new ArrayList<>(jugadores);
     }
