@@ -11,11 +11,10 @@ public class ControladorRegistro {
     private final ModeloRegistro modelo;
     private final VistaRegistro vista;
     private final Cliente cliente;
-    private final Blackboard blackboard;
 
     public ControladorRegistro(Cliente cliente) {
         this.cliente = cliente;
-        this.blackboard = Blackboard.getInstancia();
+        Blackboard.getInstancia();
         this.modelo = new ModeloRegistro();
         this.vista = new VistaRegistro();
         vista.getBtnRegistrar().addActionListener(e -> registrarJugador());

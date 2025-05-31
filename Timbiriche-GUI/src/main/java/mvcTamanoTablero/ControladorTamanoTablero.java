@@ -1,9 +1,11 @@
 package mvcTamanoTablero;
 
-import com.mycompany.blackboard.Blackboard;
 import com.mycompany.timbirichenetwork.Cliente;
 import com.mycompany.timbirichenetwork.modelo.Jugador;
 import mvcLobby.ControladorLobbyJuego;
+import mvcLobby.ModeloLobbyJuego;
+import mvcLobby.VistaLobby;
+
 import javax.swing.*;
 
 public class ControladorTamanoTablero {
@@ -11,19 +13,17 @@ public class ControladorTamanoTablero {
     private final VistaTamanoTablero vista;
     private final Jugador jugador;
     private final Cliente cliente;
-    private final Blackboard blackboard;
 
     public ControladorTamanoTablero(Jugador jugador, Cliente cliente) {
         this.jugador = jugador;
         this.cliente = cliente;
-        this.blackboard = Blackboard.getInstancia();
         this.modelo = new ModeloTamanoTablero();
         this.vista = new VistaTamanoTablero();
+
         vista.getBtnContinuar().addActionListener(e -> configurarPartida());
     }
 
     private void configurarPartida() {
-        // Solicitar tamaño del tablero a la vista
         int tamanoSeleccionado = vista.getTamañoSeleccionado();
 
         if (tamanoSeleccionado <= 0) {
@@ -31,11 +31,14 @@ public class ControladorTamanoTablero {
             return;
         }
 
-        // Interactuar con modelo para configurar partida
-        modelo.configurarPartida(tamanoSeleccionado, blackboard, cliente);
-
+        modelo.configurarPartida(tamanoSeleccionado);
         vista.dispose();
-        // Continuar al lobby
-        new ControladorLobbyJuego(jugador, modelo.getTamañoSeleccionado(), cliente);
+
+        VistaLobby vistaLobby = new VistaLobby();
+        ModeloLobbyJuego modeloLobby = ModeloLobbyJuego.obtenerOInicializar();
+        modeloLobby.agregarJugador(jugador, cliente);
+        modeloLobby.registrarVista(vistaLobby);
+
+        new ControladorLobbyJuego(modeloLobby, vistaLobby, cliente, jugador, tamanoSeleccionado);
     }
 }
