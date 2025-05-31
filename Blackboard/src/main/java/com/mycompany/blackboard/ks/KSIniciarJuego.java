@@ -4,6 +4,7 @@ import com.mycompany.blackboard.Blackboard;
 import com.mycompany.timbirichenetwork.eventos.EventoIniciarJuego;
 import com.mycompany.timbirichenetwork.modelo.Jugador;
 import mvcJuego.ModeloJuego;
+
 import javax.swing.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -27,14 +28,10 @@ public class KSIniciarJuego {
 
         System.out.println("[KS] EventoIniciarJuego recibido. Iniciando partida.");
         ModeloJuego modelo = new ModeloJuego(jugadores, evento.getTamañoTablero());
-        Blackboard blackboard = Blackboard.getInstancia();
-        modelo.inicializarJuego(blackboard, null); // cliente no necesario
-        blackboard.publicar(modelo);
+        Blackboard.getInstancia().publicar(modelo);
         System.out.println("[KS] ModeloJuego publicado en Blackboard.");
 
-        // Crear controlador de juego (solo una vez)
-        if (iniciado.compareAndSet(
-                false, true)) {
+        if (iniciado.compareAndSet(false, true)) {
             SwingUtilities.invokeLater(() -> new mvcJuego.ControladorJuego());
         }
     }
